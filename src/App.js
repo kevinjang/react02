@@ -1,28 +1,34 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React,{Suspense} from 'react'
+import {unstable_createResource as createResource} from 'react-cache'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+// class SuspendComp extends React.Component{
+// }
+
+const getHello = ()=>{
+   return new Promise((resolve,reject)=>{
+        setTimeout(()=>{
+            resolve('开课吧真不错')
+        },3000)
+    })
 }
 
-export default App;
+const resource = createResource(getHello)
+
+const HelloWorld = ()=>{
+    return <div>哈喽啊 {resource.read()}</div>
+}   
+
+const SuspendComp = ()=>{
+    return <Suspense fallback={<div>加载中...</div>}>
+        {/*用Suspense包裹后支持异步获取数据 */}
+        <HelloWorld></HelloWorld>
+    </Suspense>
+}
+
+class App extends React.Component{
+    render(){
+        return <SuspendComp></SuspendComp>
+    }
+}
+
+export default App
